@@ -46,7 +46,7 @@ type Product struct {
 }
 
 func initDB() {
-	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=orders_db sslmode=disable"
+	connStr := "host=postgres port=5432 user=postgres password=postgres dbname=orders_db sslmode=disable"
 	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
@@ -79,10 +79,10 @@ func getProductFromService(productID int) (*Product, error) {
 
 func updateProductStock(productID, quantity int) error {
 	reqBody, _ := json.Marshal(map[string]int{"quantity": quantity})
-	req, err := http.NewRequest("PATCH", 
+	req, err := http.NewRequest("PATCH",
 		fmt.Sprintf("http://localhost:8002/api/products/%d/stock", productID),
 		io.NopCloser(io.NopCloser(io.NopCloser(jsonReader{reqBody}))))
-	
+
 	if err != nil {
 		return err
 	}

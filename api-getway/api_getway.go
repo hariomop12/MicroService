@@ -1,8 +1,8 @@
-package apigetway
+package main
 
 import (
 	"fmt"
-	"io"
+
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -24,17 +24,17 @@ var registry ServiceRegistry
 func initServiceRegistry() {
 	var err error
 
-	registry.UserService, err = url.Parse("http://localhost:8001")
+	registry.UserService, err = url.Parse("http://user-service:8001")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	registry.ProductService, err = url.Parse("http://localhost:8002")
+	registry.ProductService, err = url.Parse("http://product-service:8002")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	registry.OrderService, err = url.Parse("http://localhost:8003")
+	registry.OrderService, err = url.Parse("http://order-service:8003")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -164,7 +164,6 @@ func routeHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not Found", http.StatusNotFound)
 }
 
-
 // Service discovery endpoint
 func servicesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -179,19 +178,19 @@ func servicesHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	initServiceRegistry()
-	
+
 	r := mux.NewRouter()
-	
+
 	// Gateway-specific endpoints
 	r.HandleFunc("/health", healthCheckHandler).Methods("GET")
 	r.HandleFunc("/services", servicesHandler).Methods("GET")
-	
+
 	// Proxy all API requests
 	r.PathPrefix("/api/").HandlerFunc(routeHandler)
-	
+
 	// Apply middleware
 	handler := loggingMiddleware(corsMiddleware(rateLimitMiddleware(r)))
-	
+
 	fmt.Println("API Gateway running on :8000")
 	fmt.Println("-----------------------------------")
 	fmt.Println("Routes:")
@@ -201,6 +200,6 @@ func main() {
 	fmt.Println("  *    /api/products/*   -> Product Service (8002)")
 	fmt.Println("  *    /api/orders/*     -> Order Service (8003)")
 	fmt.Println("-----------------------------------")
-	
+
 	log.Fatal(http.ListenAndServe(":8000", handler))
 }

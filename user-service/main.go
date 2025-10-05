@@ -1,4 +1,4 @@
-package userservice
+package main
 
 import (
 	"database/sql"
@@ -44,7 +44,7 @@ type Claims struct {
 }
 
 func initDB() {
-	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=users_db sslmode=disable"
+	connStr := "host=postgres port=5432 user=postgres password=postgres dbname=users_db sslmode=disable"
 	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
@@ -206,4 +206,6 @@ func main() {
 	r.HandleFunc("/users/search", searchUsersHandler).Methods("GET")
 	r.HandleFunc("/health", healthHandler).Methods("GET")
 
+	log.Println("User service starting on port 8001...")
+	log.Fatal(http.ListenAndServe(":8001", r))
 }

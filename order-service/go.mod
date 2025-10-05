@@ -1,6 +1,6 @@
 module order-service
 
-go 1.24.4
+go 1.23
 
 require (
 	github.com/gorilla/mux v1.8.1

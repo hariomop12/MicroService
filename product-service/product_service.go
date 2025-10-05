@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
 	"github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
@@ -36,7 +36,7 @@ type CreateProductRequest struct {
 }
 
 func initDB() {
-	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=products_db sslmode=disable"
+	connStr := "host=postgres port=5432 user=postgres password=postgres dbname=products_db sslmode=disable"
 	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
